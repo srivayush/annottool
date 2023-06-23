@@ -176,7 +176,6 @@ def generate_static_html_using_pdf_hash2(pdf_path, html_path, aliases):
             .pdf-viewer {{
                 width: 100%;
                 height: calc(100% - 30px);
-                border: none;
             }}
         </style>
     </head>
@@ -184,7 +183,7 @@ def generate_static_html_using_pdf_hash2(pdf_path, html_path, aliases):
         <div class="header">
             Currently Selected: {", ".join(aliases)}
         </div>
-        <embed class="pdf-viewer" src="data:application/pdf;base64,{encoded_pdf}" type="application/pdf" width="100%" height="100%">
+        <iframe class="pdf-viewer" src="data:application/pdf;base64,{encoded_pdf}" width="100%" height="600"></iframe>
     </body>
     </html>
     '''
