@@ -24,7 +24,7 @@ app = FastAPI()
 
 @app.get("/")
 async def home():
-    return "Welcome to the Annotation Tool!"
+    return HTMLResponse(content='<html><body style="background-color: white; color: black;"><h1>Welcome to the Annotation Tool!</h1><form action="/pdf-viewer/" method="get"><label for="pdf_url">Enter PDF URL:</label><br><input type="text" id="pdf_url" name="pdf_url"><br><br><input type="submit" value="Submit"></form></body></html>', media_type="text/html")
 
 @app.get("/pdf-viewer/")
 async def view_pdf_viewer_html(pdf_url: str=""):
