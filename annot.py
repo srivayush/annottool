@@ -115,9 +115,11 @@ async def view_pdf(pdf_url: str = ""):
             if annotations:
                 print("$$$$$ drawing annotations on output_pdf_path....")
                 draw_annotations_on_pdf(input_file=document_pdf_path, output_file=output_pdf_path, annotations=annotations)
+                output_html_filepath = generate_static_html_using_pdf_hash2(output_pdf_path, output_html_filepath, aliases)
                 return FileResponse(output_pdf_path, media_type="application/pdf")
         else:
             print("$$$$$ not able to generate annotations due to exception hence displaying input pdf itself...")
+            output_html_filepath = generate_static_html_using_pdf_hash2(document_pdf_path, output_html_filepath, aliases)
             return FileResponse(document_pdf_path, media_type="application/pdf")
     return FileResponse(output_pdf_path, media_type="application/pdf")
 
