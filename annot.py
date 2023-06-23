@@ -140,35 +140,30 @@ async def view_pdf_viewer_html(pdf_url: str=""):
                 file.write(response.content)
         else:
             raise HTTPException(status_code=400, detail="Failed to download PDF file.")
-    # if not os.path.exists(output_pdf_path):
-    print("$$$$$ output_pdf_path does not exist hence generating annotations....")
-    try:
-        result_dict = get_category_mounting_results_all_pages(pdf_filepath=document_pdf_path)
-    except Exception as e:
-        result_dict = {}
-        aliases = []
-        print("$$$$$ Encountered exception while generating category mounting results:", e)      
-    if result_dict:
-        print("$$$$$ result_dict", result_dict)
-        aliases, annotations = bounding_box_json_parser(result_dict)
-        print("$$$$$ input_file, output_file, aliases, annotations", document_pdf_path, output_pdf_path, aliases, annotations)
-        if annotations:
-            print("$$$$$ drawing annotations on output_pdf_path....")
-            draw_annotations_on_pdf(input_file=document_pdf_path, output_file=output_pdf_path, annotations=annotations)
-    else:
-        print("$$$$$ not able to generate annotations due to exception hence generating output_html_filepath from document_pdf_path...")
-        output_html_filepath = generate_static_html_using_pdf_hash2(document_pdf_path, output_html_filepath, aliases)
-        with open(output_html_filepath, "r") as file:
-            html_content = file.read()
-        return HTMLResponse(content=html_content, media_type="text/html")
-    # if not os.path.exists(output_html_filepath):
-    print("$$$$$ output_html_filepath does not exist hence generating...")
-    output_html_filepath = generate_static_html_using_pdf_hash2(output_pdf_path, output_html_filepath, aliases)
-
+    if not os.path.exists(output_pdf_path):
+        print("$$$$$ output_pdf_path does not exist hence generating annotations....")
+        try:
+            result_dict = get_category_mounting_results_all_pages(pdf_filepath=document_pdf_path)
+        except Exception as e:
+            result_dict = {}
+            aliases = []
+            print("$$$$$ Encountered exception while generating category mounting results:", e)      
+        if result_dict:
+            print("$$$$$ result_dict", result_dict)
+            aliases, annotations = bounding_box_json_parser(result_dict)
+            print("$$$$$ input_file, output_file, aliases, annotations", document_pdf_path, output_pdf_path, aliases, annotations)
+            if annotations:
+                print("$$$$$ drawing annotations on output_pdf_path....")
+                draw_annotations_on_pdf(input_file=document_pdf_path, output_file=output_pdf_path, annotations=annotations)
+        else:
+            print("$$$$$ not able to generate annotations due to exception hence generating output_html_filepath from document_pdf_path...")
+            output_html_filepath = generate_static_html_using_pdf_hash2(document_pdf_path, output_html_filepath, aliases)
+    if not os.path.exists(output_html_filepath):
+        print("$$$$$ output_html_filepath does not exist hence generating...")
+        output_html_filepath = generate_static_html_using_pdf_hash2(output_pdf_path, output_html_filepath, aliases)
     # response = StreamingResponse(stream_file(output_html_filepath), media_type="text/html")
     # response.headers["Content-Disposition"] = f'inline; filename="{html_filename}"'
     # return response
-    
     with open(output_html_filepath, "r") as file:
         html_content = file.read()
     return HTMLResponse(content=html_content, media_type="text/html")
