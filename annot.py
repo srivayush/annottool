@@ -11,6 +11,10 @@ class Settings:
     INPUT_PDF_DIR = "/home/ubuntu/annottool/pdf/input"
     OUTPUT_PDF_DIR = "/home/ubuntu/annottool/pdf/output"
     HTML_DIR = "/home/ubuntu/annottool/html"
+    PROXY_URL = "https://wvproxy-staging.parspec.io/controller/rate_limited_download?url="
+
+def get_proxied_url(url):
+    return Settings.PROXY_URL + base64.b64encode(url.encode()).decode()
 
 def generate_hash(url):
     hash_object = hashlib.sha256(url.encode())
@@ -22,8 +26,9 @@ app = FastAPI()
 async def home():
     return "Welcome to the Annotation Tool!"
 
-@app.get("/pdf-viewer/{pdf_url}")
-async def view_pdf_viewer_html(pdf_url: str):
+@app.get("/pdf-viewer/")
+async def view_pdf_viewer_html(pdf_url: str=""):
+    url = get_proxied_url(url)
     url_hash = generate_hash(pdf_url)
     print("$$$$$ url_hash", url_hash)
     local_filename = f"{url_hash}.pdf"
@@ -34,7 +39,7 @@ async def view_pdf_viewer_html(pdf_url: str):
     output_html_filepath = os.path.join(Settings.HTML_DIR, html_filename)    
     if not os.path.exists(document_pdf_path):
         print("$$$$$ document_pdf_path does not exist hence downloading locally....")
-        response = requests.get(pdf_url)
+        response = requests.get(pdf_url, timeout=10)
         if response.status_code == 200:
             with open(document_pdf_path, "wb") as file:
                 file.write(response.content)
