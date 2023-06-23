@@ -1,6 +1,7 @@
 import os
 import hashlib
 import requests
+import base64
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import HTMLResponse, StreamingResponse, FileResponse
 from utils.annotation_helper import *
