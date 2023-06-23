@@ -151,6 +151,53 @@ def generate_static_html_using_pdf_hash(pdf_path, html_path, aliases):
     return html_path
 
 
+def generate_static_html_using_pdf_hash2(pdf_path, html_path, aliases):
+    with open(pdf_path, "rb") as file:
+        pdf_content = file.read()
+        encoded_pdf = base64.b64encode(pdf_content).decode("utf-8")
+
+    html_content = f'''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>PDF Viewer</title>
+        <style>
+            body, html {{
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }}
+            .header {{
+                background-color: white;
+                color: black;
+                padding: 10px;
+                text-align: center;
+                font-size: 20px;
+                font-weight: bold;
+            }}
+            .pdf-viewer {{
+                width: 100%;
+                height: calc(100% - 30px);
+                border: none;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            Currently Selected: {", ".join(aliases)}
+        </div>
+        <embed class="pdf-viewer" src="data:application/pdf;base64,{encoded_pdf}" type="application/pdf" width="100%" height="100%">
+    </body>
+    </html>
+    '''
+
+    with open(html_path, 'w') as file:
+        file.write(html_content)
+
+    print(f"HTML file saved successfully at: {html_path}")
+    return html_path
+
+
 def generate_static_html_using_pdfjs(pdf_path, html_path, aliases):
     pdf_file_path = f"{pdf_path}"
     with open(pdf_file_path, "rb") as file:
