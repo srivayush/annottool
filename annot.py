@@ -74,8 +74,10 @@ async def home(pdf_url: str = ""):
             <br><br>
             <button class="btn" type="submit" name="action" value="view_html">View HTML</button>
         </form>
-        <form action="/pdf-viewer/" method="get" target="_blank">
-            <input type="hidden" name="pdf_url" value="{pdf_url}">
+        <form action="/pdf/" method="get" target="_blank">
+            <p>PDF URL:</p>
+            <input type="text" name="pdf_url" value="{pdf_url}">
+            <br><br>
             <button class="btn" type="submit" name="action" value="view_pdf">View PDF</button>
         </form>
     </body>
