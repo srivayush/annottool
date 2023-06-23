@@ -42,7 +42,6 @@ def bounding_box_json_parser(result_dict):
                 else:
                      annotations[page_num].append([w*item["x0"],h*item["y0"],w*item["x1"],h*item["y1"],False])
     if len(important_keywords)>=1:
-        aliases.append("Important Keywords")
         for item in important_keywords:
             page_num = item["page_num"]
             w,h = page_width_height_list[page_num]
@@ -51,7 +50,6 @@ def bounding_box_json_parser(result_dict):
             else:
                 annotations[page_num].append([w*item["x0"],h*item["y0"],w*item["x1"],h*item["y1"],False])
     if len(removed_keywords)>=1:
-        aliases.append("Removed Keywords")
         for item in removed_keywords:
             page_num = item["page_num"]
             w,h = page_width_height_list[page_num]
