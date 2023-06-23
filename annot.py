@@ -53,7 +53,7 @@ async def home():
                 font-weight: bold;
                 padding: 5px;
             }
-            input[type="submit"] {
+            .btn {
                 font-weight: bold;
                 padding: 5px 10px;
                 background-color: #006699;
@@ -70,12 +70,15 @@ async def home():
             <p>PDF URL:</p>
             <input type="text" name="pdf_url">
             <br><br>
-            <input type="submit" value="Submit">
+            <input class="btn" type="submit" name="view_html" value="View HTML">
+        </form>
+        <form action="/pdf/" method="get">
+            <input type="hidden" name="pdf_url" value="{{pdf_url}}">
+            <input class="btn" type="submit" name="view_pdf" value="View PDF">
         </form>
     </body>
     </html>
     """, media_type="text/html")
-
 
 @app.get("/pdf/")
 async def view_pdf(pdf_url: str = ""):
@@ -109,10 +112,10 @@ async def view_pdf(pdf_url: str = ""):
             if annotations:
                 print("$$$$$ drawing annotations on output_pdf_path....")
                 draw_annotations_on_pdf(input_file=document_pdf_path, output_file=output_pdf_path, annotations=annotations)
-                return FileResponse(document_pdf_path, media_type="application/pdf")
+                return FileResponse(output_pdf_path, media_type="application/pdf")
         else:
             print("$$$$$ not able to generate annotations due to exception hence displaying input pdf itself...")
-            return FileResponse(output_pdf_path, media_type="application/pdf")
+            return FileResponse(document_pdf_path, media_type="application/pdf")
 
 
 @app.get("/pdf-viewer/")
