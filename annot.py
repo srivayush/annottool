@@ -66,14 +66,14 @@ async def home():
     </head>
     <body>
         <h1>Welcome to the Annotation Tool!</h1>
-        <form action="/pdf-viewer/" method="get" target="_blank">
+        <form action="/pdf-viewer/" method="get">
             <p>PDF URL:</p>
             <input type="text" name="pdf_url">
             <br><br>
             <input class="btn" type="submit" name="view_html" value="View HTML">
         </form>
-        <form action="/pdf/" method="get" target="_blank">
-            <input type="text" name="pdf_url" style="display: none;">
+        <form action="/pdf/" method="get">
+            <input type="hidden" name="pdf_url" value="{{pdf_url}}">
             <input class="btn" type="submit" name="view_pdf" value="View PDF">
         </form>
     </body>
