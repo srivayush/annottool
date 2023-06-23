@@ -70,11 +70,11 @@ async def home():
             <p>PDF URL:</p>
             <input type="text" name="pdf_url">
             <br><br>
-            <input class="btn" type="submit" name="view_html" value="View HTML">
+            <input class="btn" type="submit" name="action" value="View HTML">
         </form>
         <form action="/pdf/" method="get">
             <input type="hidden" name="pdf_url" value="{{pdf_url}}">
-            <input class="btn" type="submit" name="view_pdf" value="View PDF">
+            <input class="btn" type="submit" name="action" value="View PDF">
         </form>
     </body>
     </html>
