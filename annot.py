@@ -31,6 +31,7 @@ def stream_file(filepath):
 
 app = FastAPI()
 
+
 @app.get("/")
 async def home():
     return HTMLResponse(content="""
@@ -67,15 +68,15 @@ async def home():
     </head>
     <body>
         <h1>Welcome to the Annotation Tool!</h1>
-        <form action="/pdf-viewer/" method="get">
+        <form action="/pdf-viewer/" method="get" target="_blank">
             <p>PDF URL:</p>
             <input type="text" name="pdf_url">
             <br><br>
-            <input class="btn" type="submit" name="action" value="View HTML">
+            <button class="btn" type="submit" name="action" value="view_html">View HTML</button>
         </form>
-        <form action="/pdf/" method="get">
+        <form action="/pdf/" method="get" target="_blank">
             <input type="hidden" name="pdf_url" value="{{pdf_url}}">
-            <input class="btn" type="submit" name="action" value="View PDF">
+            <button class="btn" type="submit" name="action" value="view_pdf">View PDF</button>
         </form>
     </body>
     </html>
