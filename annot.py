@@ -1,8 +1,8 @@
 import os
 import hashlib
 import requests
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, HTTPException, Response
+from fastapi.responses import HTMLResponse, StreamingResponse
 from utils.annotation_helper import *
 from utils.tech_specs_helper import get_category_mounting_results_all_pages
 
@@ -19,6 +19,14 @@ def get_proxied_url(url):
 def generate_hash(url):
     hash_object = hashlib.sha256(url.encode())
     return hash_object.hexdigest()
+
+def stream_file(filepath):
+    with open(filepath, "rb") as file:
+        while True:
+            data = file.read(65536)  # Read in 64KB chunks
+            if not data:
+                break
+            yield data
 
 app = FastAPI()
 
@@ -108,6 +116,11 @@ async def view_pdf_viewer_html(pdf_url: str=""):
     if not os.path.exists(output_html_filepath):
         print("$$$$$ output_html_filepath does not exist hence generating...")
         output_html_filepath = generate_static_html_using_pdf_hash(output_pdf_path, output_html_filepath, aliases)
-    with open(output_html_filepath, "r") as file:
-        html_content = file.read()
-    return HTMLResponse(content=html_content, media_type="text/html")
+
+    response = StreamingResponse(stream_file(output_html_filepath), media_type="text/html")
+    response.headers["Content-Disposition"] = f'inline; filename="{html_filename}"'
+    return response
+    
+    # with open(output_html_filepath, "r") as file:
+    #     html_content = file.read()
+    # return HTMLResponse(content=html_content, media_type="text/html")
