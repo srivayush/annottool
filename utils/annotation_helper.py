@@ -66,35 +66,37 @@ def draw_annotations_on_pdf(input_file, output_file, annotations):
         pdf = PdfFileReader(file)
         # Create a new PDF writer
         output = PdfFileWriter()
-        # Get the first page of the PDF
-        page = pdf.getPage(0)
-        # Create a new PDF canvas for the first page
-        packet = io.BytesIO()
-        can = canvas.Canvas(packet, pagesize=letter)
-        # Check if annotations are specified for the first page
-        if 0 in annotations:
-            # Draw the green boxes on the canvas
-            for box_info in annotations[0]:
-                [x1, y1, x2, y2, exclude] = box_info
-                if exclude:
-                    # Transparent red rectangle
-                    can.setStrokeColorRGB(1, 0, 0)
-                    can.setFillColorRGB(1, 0, 0)
-                else:
-                    # Transparent green rectangle
-                    can.setStrokeColorRGB(0, 1, 0)
-                    can.setFillColorRGB(0, 1, 0)
-                can.setFillAlpha(0.3)
-                can.rect(x1, y1, x2 - x1, y2 - y1, fill=1)
-        # Save the canvas
-        can.save()
-        # Move the pointer to the beginning of the packet
-        packet.seek(0)
-        new_pdf = PdfFileReader(packet)
-        # Merge the modified page with the original PDF
-        page.mergePage(new_pdf.getPage(0))
-        # Add the modified page to the output PDF
-        output.addPage(page)
+        # Iterate over each page in the PDF
+        for page_num in range(pdf.getNumPages()):
+            # Validate page numbers in the annotations dictionary
+            page = pdf.getPage(page_num)
+            # Create a new PDF canvas for the current page
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=letter)
+            # Check if annotations are specified for the current page
+            if page_num in annotations:
+                # Draw the green boxes on the canvas
+                for box_info in annotations[page_num]:
+                    [x1, y1, x2, y2, exclude] = box_info
+                    if exclude:
+                        # Transparent red rectangle
+                        can.setStrokeColorRGB(1, 0, 0)
+                        can.setFillColorRGB(1, 0, 0)
+                    else:
+                        # Transparent green rectangle
+                        can.setStrokeColorRGB(0, 1, 0)
+                        can.setFillColorRGB(0, 1, 0)
+                    can.setFillAlpha(0.3)
+                    can.rect(x1, y1, x2 - x1, y2 - y1, fill=1)
+            # Save the canvas
+            can.save()
+            # Move the pointer to the beginning of the packet
+            packet.seek(0)
+            new_pdf = PdfFileReader(packet)
+            # Merge the modified page with the original PDF
+            page.mergePage(new_pdf.getPage(0))
+            # Add the modified page to the output PDF
+            output.addPage(page)
         # Write the output to a new PDF file
         with open(output_file, 'wb') as out_file:
             output.write(out_file)
