@@ -83,48 +83,8 @@ async def home(pdf_url: str = ""):
     </html>
     """, media_type="text/html")
 
-@app.get("/pdf/")
-async def view_pdf(pdf_url: str = ""):
-    url_hash = generate_hash(pdf_url)
-    pdf_url = get_proxied_url(pdf_url)
-    print("$$$$$ url_hash", url_hash)
-    local_filename = f"{url_hash}.pdf"
-    output_filename = f"annotated_{url_hash}.pdf"
-    document_pdf_path = os.path.join(Settings.INPUT_PDF_DIR, local_filename)
-    output_pdf_path = os.path.join(Settings.OUTPUT_PDF_DIR, output_filename)
-    if not os.path.exists(document_pdf_path):
-        print("$$$$$ document_pdf_path does not exist hence downloading locally....")
-        response = requests.get(pdf_url, timeout=10)
-        if response.status_code == 200:
-            with open(document_pdf_path, "wb") as file:
-                file.write(response.content)
-        else:
-            raise HTTPException(status_code=400, detail="Failed to download PDF file.")
-    if not os.path.exists(output_pdf_path):
-        print("$$$$$ output_pdf_path does not exist hence generating annotations....")
-        try:
-            result_dict = get_category_mounting_results_all_pages(pdf_filepath=document_pdf_path)
-        except Exception as e:
-            result_dict = {}
-            aliases = []
-            print("$$$$$ Encountered exception while generating category mounting results:", e)      
-        if result_dict:
-            print("$$$$$ result_dict", result_dict)
-            aliases, annotations = bounding_box_json_parser(result_dict)
-            print("$$$$$ input_file, output_file, aliases, annotations", document_pdf_path, output_pdf_path, aliases, annotations)
-            if annotations:
-                print("$$$$$ drawing annotations on output_pdf_path....")
-                draw_annotations_on_pdf(input_file=document_pdf_path, output_file=output_pdf_path, annotations=annotations)
-                output_html_filepath = generate_static_html_using_pdf_hash2(output_pdf_path, output_html_filepath, aliases)
-                return FileResponse(output_pdf_path, media_type="application/pdf")
-        else:
-            print("$$$$$ not able to generate annotations due to exception hence displaying input pdf itself...")
-            output_html_filepath = generate_static_html_using_pdf_hash2(document_pdf_path, output_html_filepath, aliases)
-            return FileResponse(document_pdf_path, media_type="application/pdf")
-    return FileResponse(output_pdf_path, media_type="application/pdf")
-
-@app.get("/pdf-viewer/")
-async def view_pdf_viewer_html(pdf_url: str=""):
+def generate_annotated_pdf_and_html(pdf_url):
+    non_text_selectable = False
     url_hash = generate_hash(pdf_url)
     pdf_url = get_proxied_url(pdf_url)
     print("$$$$$ url_hash", url_hash)
@@ -147,6 +107,7 @@ async def view_pdf_viewer_html(pdf_url: str=""):
         try:
             result_dict = get_category_mounting_results_all_pages(pdf_filepath=document_pdf_path)
         except Exception as e:
+            non_text_selectable = True
             result_dict = {}
             aliases = []
             print("$$$$$ Encountered exception while generating category mounting results:", e)      
@@ -163,9 +124,23 @@ async def view_pdf_viewer_html(pdf_url: str=""):
     if not os.path.exists(output_html_filepath):
         print("$$$$$ output_html_filepath does not exist hence generating...")
         output_html_filepath = generate_static_html_using_pdf_hash2(output_pdf_path, output_html_filepath, aliases)
+    if non_text_selectable:
+        return document_pdf_path, output_html_filepath
+    else:
+        return output_pdf_path, output_html_filepath
+
+@app.get("/pdf/")
+async def view_pdf(pdf_url: str = ""):
+    pdf_filepath, _ = generate_annotated_pdf_and_html(pdf_url)
+    return FileResponse(pdf_filepath, media_type="application/pdf")
+
+@app.get("/pdf-viewer/")
+async def view_pdf_viewer_html(pdf_url: str=""):
+    _, html_filepath = generate_annotated_pdf_and_html(pdf_url)
+    ############### Streaming response ###############
     # response = StreamingResponse(stream_file(output_html_filepath), media_type="text/html")
     # response.headers["Content-Disposition"] = f'inline; filename="{html_filename}"'
     # return response
-    with open(output_html_filepath, "r") as file:
+    with open(html_filepath, "r") as file:
         html_content = file.read()
     return HTMLResponse(content=html_content, media_type="text/html")
