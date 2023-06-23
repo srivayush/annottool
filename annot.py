@@ -24,7 +24,45 @@ app = FastAPI()
 
 @app.get("/")
 async def home():
-    return HTMLResponse(content='<html><body style="background-color: white; color: black;"><h1>Welcome to the Annotation Tool!</h1><form action="/pdf-viewer/" method="get"><label for="pdf_url">Enter PDF URL:</label><br><input type="text" id="pdf_url" name="pdf_url"><br><br><input type="submit" value="Submit"></form></body></html>', media_type="text/html")
+    # return HTMLResponse(content='<html><body style="background-color: white; color: black;"><h1>Welcome to the Annotation Tool!</h1><form action="/pdf-viewer/" method="get"><label for="pdf_url">Enter PDF URL:</label><br><input type="text" id="pdf_url" name="pdf_url"><br><br><input type="submit" value="Submit"></form></body></html>', media_type="text/html")
+    return """
+    <html>
+    <head>
+        <style>
+            body {
+                background-color: white;
+                text-align: center;
+                padding-top: 50px;
+            }
+            h1 {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+            p {
+                font-weight: bold;
+            }
+            input[type="text"] {
+                font-weight: bold;
+                padding: 5px;
+            }
+            input[type="submit"] {
+                font-weight: bold;
+                padding: 5px 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Welcome to the Annotation Tool!</h1>
+        <form action="/pdf-viewer/" method="get">
+            <p>PDF URL:</p>
+            <input type="text" name="pdf_url">
+            <br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+    </html>
+    """
 
 @app.get("/pdf-viewer/")
 async def view_pdf_viewer_html(pdf_url: str=""):
