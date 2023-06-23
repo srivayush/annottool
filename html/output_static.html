@@ -1,0 +1,37 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>PDF Viewer</title>
+        <style>
+            body, html {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: black;
+                color: white;
+            }
+            .header {
+                background-color: white;
+                color: black;
+                padding: 10px;
+                text-align: center;
+                font-size: 20px;
+                font-weight: bold;
+            }
+            .pdf-viewer {
+                width: 100%;
+                height: calc(100% - 30px);
+                border: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            Currently Selected: suspended, ceiling, surface
+        </div>
+        <iframe class="pdf-viewer" src="output_acuity2_exclude.pdf"></iframe>
+    </body>
+    </html>
+    
