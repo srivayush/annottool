@@ -48,7 +48,7 @@ async def home():
             input[type="submit"] {
                 font-weight: bold;
                 padding: 5px 10px;
-                background-color: lightblue;
+                background-color: #006699;
                 color: white;
                 border: none;
                 border-radius: 5px;
