@@ -28,8 +28,8 @@ async def home():
 
 @app.get("/pdf-viewer/")
 async def view_pdf_viewer_html(pdf_url: str=""):
-    url = get_proxied_url(url)
     url_hash = generate_hash(pdf_url)
+    pdf_url = get_proxied_url(pdf_url)
     print("$$$$$ url_hash", url_hash)
     local_filename = f"{url_hash}.pdf"
     output_filename = f"annotated_{url_hash}.pdf"
