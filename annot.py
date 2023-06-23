@@ -31,6 +31,7 @@ def stream_file(filepath):
 
 app = FastAPI()
 
+
 @app.get("/")
 async def home(pdf_url: str = ""):
     return HTMLResponse(content=f"""
@@ -67,21 +68,17 @@ async def home(pdf_url: str = ""):
     </head>
     <body>
         <h1>Welcome to the Annotation Tool!</h1>
-        <form action="/pdf-viewer/" method="get" target="_blank">
-            <p>PDF URL:</p>
-            <input type="text" name="pdf_url" value="{pdf_url}">
-            <br><br>
-            <button class="btn" type="submit" name="action" value="view_html">View HTML</button>
-        </form>
-        <form action="/pdf/" method="get" target="_blank">
+        <form action="/" method="get" target="_blank">
             <p>PDF URL:</p>
             <input type="text" name="pdf_url" value="{pdf_url}">
             <br><br>
             <button class="btn" type="submit" name="action" value="view_pdf">View PDF</button>
+            <button class="btn" type="submit" name="action" value="view_html">View HTML</button>
         </form>
     </body>
     </html>
     """, media_type="text/html")
+
 
 def generate_annotated_pdf_and_html(pdf_url):
     non_text_selectable = False
