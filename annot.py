@@ -31,7 +31,6 @@ def stream_file(filepath):
 
 app = FastAPI()
 
-
 @app.get("/")
 async def home(pdf_url: str = ""):
     return HTMLResponse(content=f"""
@@ -84,7 +83,6 @@ async def home(pdf_url: str = ""):
     </html>
     """, media_type="text/html")
 
-
 @app.get("/pdf/")
 async def view_pdf(pdf_url: str = ""):
     url_hash = generate_hash(pdf_url)
@@ -120,8 +118,7 @@ async def view_pdf(pdf_url: str = ""):
                 return FileResponse(output_pdf_path, media_type="application/pdf")
         else:
             print("$$$$$ not able to generate annotations due to exception hence displaying input pdf itself...")
-            return FileResponse(output_pdf_path, media_type="application/pdf")
-
+            return FileResponse(document_pdf_path, media_type="application/pdf")
 
 @app.get("/pdf-viewer/")
 async def view_pdf_viewer_html(pdf_url: str=""):
