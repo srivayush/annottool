@@ -119,6 +119,7 @@ async def view_pdf(pdf_url: str = ""):
         else:
             print("$$$$$ not able to generate annotations due to exception hence displaying input pdf itself...")
             return FileResponse(document_pdf_path, media_type="application/pdf")
+    return FileResponse(document_pdf_path, media_type="application/pdf")
 
 @app.get("/pdf-viewer/")
 async def view_pdf_viewer_html(pdf_url: str=""):
