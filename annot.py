@@ -73,7 +73,7 @@ async def home():
             <input class="btn" type="submit" name="view_html" value="View HTML">
         </form>
         <form action="/pdf/" method="get" target="_blank">
-            <input type="hidden" name="pdf_url" value="{{pdf_url}}">
+            <input type="text" name="pdf_url" style="display: none;">
             <input class="btn" type="submit" name="view_pdf" value="View PDF">
         </form>
     </body>
@@ -116,7 +116,7 @@ async def view_pdf(pdf_url: str = ""):
                 return FileResponse(output_pdf_path, media_type="application/pdf")
         else:
             print("$$$$$ not able to generate annotations due to exception hence displaying input pdf itself...")
-            return FileResponse(document_pdf_path, media_type="application/pdf")
+            return FileResponse(output_pdf_path, media_type="application/pdf")
 
 
 @app.get("/pdf-viewer/")
