@@ -33,51 +33,57 @@ app = FastAPI()
 
 
 @app.get("/")
-async def home(pdf_url: str = ""):
-    return HTMLResponse(content=f"""
-    <html>
-    <head>
-        <style>
-            body {{
-                background-color: white;
-                text-align: center;
-                padding-top: 50px;
-            }}
-            h1 {{
-                font-size: 24px;
-                font-weight: bold;
-                margin-bottom: 20px;
-            }}
-            p {{
-                font-weight: bold;
-            }}
-            input[type="text"] {{
-                font-weight: bold;
-                padding: 5px;
-            }}
-            .btn {{
-                font-weight: bold;
-                padding: 5px 10px;
-                background-color: #006699;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-            }}
-        </style>
-    </head>
-    <body>
-        <h1>Welcome to the Annotation Tool!</h1>
-        <form action="/" method="get" target="_blank">
-            <p>PDF URL:</p>
-            <input type="text" name="pdf_url" value="{pdf_url}">
-            <br><br>
-            <button class="btn" type="submit" name="action" value="view_pdf">View PDF</button>
-            <button class="btn" type="submit" name="action" value="view_html">View HTML</button>
-        </form>
-    </body>
-    </html>
-    """, media_type="text/html")
+async def home(pdf_url: str = "", action: str = ""):
+    if action == "view_pdf":
+        return await view_pdf(pdf_url)
+    elif action == "view_html":
+        return await view_pdf_viewer_html(pdf_url)
+    else:
+        return HTMLResponse(content=f"""
+        <html>
+        <head>
+            <style>
+                body {{
+                    background-color: white;
+                    text-align: center;
+                    padding-top: 50px;
+                }}
+                h1 {{
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin-bottom: 20px;
+                }}
+                p {{
+                    font-weight: bold;
+                }}
+                input[type="text"] {{
+                    font-weight: bold;
+                    padding: 5px;
+                }}
+                .btn {{
+                    font-weight: bold;
+                    padding: 5px 10px;
+                    background-color: #006699;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }}
+            </style>
+        </head>
+        <body>
+            <h1>Welcome to the Annotation Tool!</h1>
+            <form action="/" method="get" target="_blank">
+                <p>PDF URL:</p>
+                <input type="text" name="pdf_url" value="{pdf_url}">
+                <br><br>
+                <button class="btn" type="submit" name="action" value="view_pdf">View PDF</button>
+                <button class="btn" type="submit" name="action" value="view_html">View HTML</button>
+            </form>
+            <p>Please select an action.</p>
+        </body>
+        </html>
+        """, media_type="text/html")
 
 
 def generate_annotated_pdf_and_html(pdf_url):
