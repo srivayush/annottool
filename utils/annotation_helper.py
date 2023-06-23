@@ -149,3 +149,64 @@ def generate_static_html_using_pdf_hash(pdf_path, html_path, aliases):
         file.write(html_content)
     print(f"HTML file saved successfully at: {html_path}")
     return html_path
+
+
+def generate_static_html_using_pdfjs(encoded_pdf_url, html_path, aliases):
+    html_content=f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>PDF Viewer</title>
+        <style>
+            body, html {{
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: black;
+                color: white;
+            }}
+            .header {{
+                background-color: white;
+                color: black;
+                padding: 10px;
+                text-align: center;
+                font-size: 20px;
+                font-weight: bold;
+            }}
+            #pdf-viewer {{
+                width: 100%;
+                height: calc(100% - 30px);
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            Currently Selected: {", ".join(aliases)}
+        </div>
+        <div id="pdf-viewer"></div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+        <script>
+            pdfjsLib.getDocument("{encoded_pdf_url}").promise.then(function(pdf) {{
+                pdf.getPage(1).then(function(page) {{
+                    var canvas = document.createElement("canvas");
+                    var container = document.getElementById("pdf-viewer");
+                    container.appendChild(canvas);
+                    var context = canvas.getContext("2d");
+                    var viewport = page.getViewport({{ scale: 1 }});
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    page.render({{
+                        canvasContext: context,
+                        viewport: viewport
+                    }});
+                }});
+            }});
+        </script>
+    </body>
+    </html>
+    """
+    with open(html_path, 'w') as file:
+        file.write(html_content)
+    print(f"HTML file saved successfully at: {html_path}")
+    return html_path
