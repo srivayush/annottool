@@ -31,31 +31,30 @@ def stream_file(filepath):
 
 app = FastAPI()
 
-
 @app.get("/")
-async def home():
-    return HTMLResponse(content="""
+async def home(pdf_url: str = ""):
+    return HTMLResponse(content=f"""
     <html>
     <head>
         <style>
-            body {
+            body {{
                 background-color: white;
                 text-align: center;
                 padding-top: 50px;
-            }
-            h1 {
+            }}
+            h1 {{
                 font-size: 24px;
                 font-weight: bold;
                 margin-bottom: 20px;
-            }
-            p {
+            }}
+            p {{
                 font-weight: bold;
-            }
-            input[type="text"] {
+            }}
+            input[type="text"] {{
                 font-weight: bold;
                 padding: 5px;
-            }
-            .btn {
+            }}
+            .btn {{
                 font-weight: bold;
                 padding: 5px 10px;
                 background-color: #006699;
@@ -63,25 +62,24 @@ async def home():
                 border: none;
                 border-radius: 5px;
                 cursor: pointer;
-            }
+            }}
         </style>
     </head>
     <body>
         <h1>Welcome to the Annotation Tool!</h1>
         <form action="/pdf-viewer/" method="get" target="_blank">
             <p>PDF URL:</p>
-            <input type="text" name="pdf_url">
+            <input type="text" name="pdf_url" value="{pdf_url}">
             <br><br>
-            <button class="btn" type="submit" name="view_html" value="View HTML">View HTML</button>
+            <button class="btn" type="submit" name="action" value="view_html">View HTML</button>
         </form>
         <form action="/pdf/" method="get" target="_blank">
-            <input type="hidden" name="pdf_url" value="{{pdf_url}}">
-            <button class="btn" type="submit" name="view_pdf" value="View PDF">View PDF</button>
+            <input type="hidden" name="pdf_url" value="{pdf_url}">
+            <button class="btn" type="submit" name="action" value="view_pdf">View PDF</button>
         </form>
     </body>
     </html>
     """, media_type="text/html")
-
 
 @app.get("/pdf/")
 async def view_pdf(pdf_url: str = ""):
