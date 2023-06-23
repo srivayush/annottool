@@ -151,7 +151,12 @@ def generate_static_html_using_pdf_hash(pdf_path, html_path, aliases):
     return html_path
 
 
-def generate_static_html_using_pdfjs(encoded_pdf_url, html_path, aliases):
+def generate_static_html_using_pdfjs(pdf_path, html_path, aliases):
+    pdf_file_path = f"{pdf_path}"
+    with open(pdf_file_path, "rb") as file:
+        pdf_content = file.read()
+        encoded_pdf = base64.b64encode(pdf_content).decode("utf-8")
+    pdf_data_uri = f"data:application/pdf;base64,{encoded_pdf}"
     html_content=f"""
     <!DOCTYPE html>
     <html>
@@ -187,7 +192,7 @@ def generate_static_html_using_pdfjs(encoded_pdf_url, html_path, aliases):
         <div id="pdf-viewer"></div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
         <script>
-            pdfjsLib.getDocument("{encoded_pdf_url}").promise.then(function(pdf) {{
+            pdfjsLib.getDocument("{pdf_data_uri}").promise.then(function(pdf) {{
                 pdf.getPage(1).then(function(page) {{
                     var canvas = document.createElement("canvas");
                     var container = document.getElementById("pdf-viewer");
