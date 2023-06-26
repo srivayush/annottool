@@ -60,7 +60,7 @@ def bounding_box_json_parser(result_dict):
                 annotations[page_num] = [[w*item["x0"],h*item["y0"],w*item["x1"],h*item["y1"],True]]
             else:
                 annotations[page_num].append([w*item["x0"],h*item["y0"],w*item["x1"],h*item["y1"],True])
-    return aliases, aliases_page_1, annotations
+    return list(set(aliases)), list(set(aliases_page_1)), annotations
 
 
 def draw_annotations_on_pdf(input_file, output_file, annotations):
@@ -158,7 +158,6 @@ def generate_static_html_using_pdf_hash2(pdf_path, html_path, aliases, aliases_p
     with open(pdf_path, "rb") as file:
         pdf_content = file.read()
         encoded_pdf = base64.b64encode(pdf_content).decode("utf-8")
-
     html_content = f'''
     <!DOCTYPE html>
     <html>
@@ -186,9 +185,9 @@ def generate_static_html_using_pdf_hash2(pdf_path, html_path, aliases, aliases_p
     </head>
     <body>
         <div class="header">
-            Aliases for all pages: {", ".join(aliases)}
+            Labels for Pg1: {", ".join(aliases_page_1)}
             <br>
-            Aliases for first page: {", ".join(aliases_page_1)}
+            Labels for All Pages: {", ".join(aliases)}
         </div>
         <iframe class="pdf-viewer" src="data:application/pdf;base64,{encoded_pdf}" width="100%" height="600"></iframe>
     </body>
