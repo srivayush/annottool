@@ -1,5 +1,6 @@
 import os
 import hashlib
+import time
 import requests
 import base64
 from fastapi import FastAPI, HTTPException, Response
@@ -30,7 +31,7 @@ def stream_file(filepath):
             yield data
 
 def generate_annotated_pdf_and_html(pdf_url):
-    non_text_selectable = False
+    start_time = time.time()
     url_hash = generate_hash(pdf_url)
     pdf_url = get_proxied_url(pdf_url)
     print("Computed url_hash", url_hash)
@@ -76,10 +77,14 @@ def generate_annotated_pdf_and_html(pdf_url):
             else:
                 print("SOMETHING WRONG HAS HAPPENED")
             output_html_filepath = generate_static_html_using_pdf_hash2(document_pdf_path, output_html_filepath, aliases)
+            end_time = time.time()
+            print(f"Total time taken to export html: {end_time-start_time} secs")
             return document_pdf_path, output_html_filepath
     if not os.path.exists(output_html_filepath):
         print("unable to locate output_html_filepath locally hence generating...")
         output_html_filepath = generate_static_html_using_pdf_hash2(output_pdf_path, output_html_filepath, aliases)
+    end_time = time.time()
+    print(f"Total time taken to export html: {end_time-start_time} secs")
     return output_pdf_path, output_html_filepath
 
 app = FastAPI()
