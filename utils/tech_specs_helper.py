@@ -245,8 +245,8 @@ def remove_keywords(list_of_text_from_json_file, remove_keyword_list):
   is_present, outputs = substring_match(list_of_text_from_json_file, remove_keyword_list)
   outputs_copy = copy.deepcopy(outputs)
   id_to_remove = [text["id"] for text in outputs]
-  id_to_remove.sort()
   id_to_remove = list(set(id_to_remove))
+  id_to_remove.sort()
   i = 0
   j = 0
   while True:
