@@ -187,6 +187,7 @@ def generate_static_html_using_pdf_hash2(pdf_path, html_path, aliases, aliases_p
     <body>
         <div class="header">
             Aliases for all pages: {", ".join(aliases)}
+            <br>
             Aliases for first page: {", ".join(aliases_page_1)}
         </div>
         <iframe class="pdf-viewer" src="data:application/pdf;base64,{encoded_pdf}" width="100%" height="600"></iframe>
