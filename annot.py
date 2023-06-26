@@ -82,7 +82,7 @@ def generate_annotated_pdf_and_html(pdf_url):
             print(f"Total time taken to export html: {end_time-start_time} secs")
             return document_pdf_path, output_html_filepath
     if not os.path.exists(output_html_filepath):
-        print("unable to locate output_html_filepath locally hence generating...")
+        print("Unable to locate output_html_filepath locally hence generating...")
         output_html_filepath = generate_static_html_using_pdf_hash2(output_pdf_path, output_html_filepath, aliases, aliases_page_1)
     end_time = time.time()
     print(f"Total time taken to export html: {end_time-start_time} secs")
