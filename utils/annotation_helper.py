@@ -1,4 +1,5 @@
 import io
+import fitz
 import base64
 from PyPDF2 import PdfFileWriter, PdfFileReader
 from reportlab.lib.pagesizes import letter
@@ -104,6 +105,29 @@ def draw_annotations_on_pdf(input_file, output_file, annotations):
         # Write the output to a new PDF file
         with open(output_file, 'wb') as out_file:
             output.write(out_file)
+
+
+def draw_annotations_on_pdf_using_fitz(input_file, output_file, annotations):
+    doc = fitz.open(input_file)
+    total_pages = doc.page_count
+    for page_num, coords_list in annotations.items():
+        if page_num > total_pages:
+            print(f"Invalid page number: {page_num}. Skipping annotation.")
+            continue
+        else:
+            page = doc[page_num - 1]
+            for box_info in coords_list:
+                [x1, y1, x2, y2, exclude] = box_info
+                coords = (x1, y1, x2, y2)
+                rect = fitz.Rect(*coords)
+                highlight = page.add_highlight_annot(rect)
+                if exclude:
+                    highlight.set_colors(stroke=[1, 0, 0])  # Red stroke color
+                else:
+                    highlight.set_colors(stroke=[0, 1, 0])  # Green stroke color
+    doc.save(output_file)
+    doc.close()
+    print("Annotations added successfully")
 
 
 def generate_static_html_using_pdf_hash(pdf_path, html_path, aliases):
