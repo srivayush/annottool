@@ -97,7 +97,8 @@ def draw_annotations_on_pdf(input_file, output_file, annotations):
             packet.seek(0)
             new_pdf = PdfFileReader(packet)
             # Merge the modified page with the original PDF
-            page.mergePage(new_pdf.getPage(0))
+            if new_pdf.getNumPages() > 0:            
+                page.mergePage(new_pdf.getPage(0))
             # Add the modified page to the output PDF
             output.addPage(page)
         # Write the output to a new PDF file
