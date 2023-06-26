@@ -66,7 +66,7 @@ def bounding_box_json_parser(result_dict):
 def draw_annotations_on_pdf(input_file, output_file, annotations):
     # Open the PDF
     with open(input_file, 'rb') as file:
-        pdf = PdfFileReader(file)
+        pdf = PdfFileReader(file, strict=False)
         # Create a new PDF writer
         output = PdfFileWriter()
         # Iterate over each page in the PDF
