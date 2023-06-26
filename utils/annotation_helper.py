@@ -14,6 +14,7 @@ def bounding_box_json_parser(result_dict):
     important_keywords = result_dict["important_keywords"] # list
     removed_keywords = result_dict["removed_keywords"] # list
     aliases = []
+    aliases_page_1 = []
     annotations = {}
     for alias, mapping in category_mounting.items():
         aliases.append(alias)
@@ -36,6 +37,8 @@ def bounding_box_json_parser(result_dict):
             # category_mounting is to be included
             for item in mapping:
                 page_num = item["page_num"]
+                if page_num==0:
+                    aliases_page_1.append(alias)
                 w,h = page_width_height_list[page_num]
                 if page_num not in annotations.keys():
                      annotations[page_num] = [[w*item["x0"],h*item["y0"],w*item["x1"],h*item["y1"],False]]
@@ -57,7 +60,7 @@ def bounding_box_json_parser(result_dict):
                 annotations[page_num] = [[w*item["x0"],h*item["y0"],w*item["x1"],h*item["y1"],True]]
             else:
                 annotations[page_num].append([w*item["x0"],h*item["y0"],w*item["x1"],h*item["y1"],True])
-    return aliases, annotations
+    return aliases, aliases_page_1, annotations
 
 
 def draw_annotations_on_pdf(input_file, output_file, annotations):
@@ -151,7 +154,7 @@ def generate_static_html_using_pdf_hash(pdf_path, html_path, aliases):
     return html_path
 
 
-def generate_static_html_using_pdf_hash2(pdf_path, html_path, aliases):
+def generate_static_html_using_pdf_hash2(pdf_path, html_path, aliases, aliases_page_1):
     with open(pdf_path, "rb") as file:
         pdf_content = file.read()
         encoded_pdf = base64.b64encode(pdf_content).decode("utf-8")
@@ -183,7 +186,8 @@ def generate_static_html_using_pdf_hash2(pdf_path, html_path, aliases):
     </head>
     <body>
         <div class="header">
-            Currently Selected: {", ".join(aliases)}
+            Aliases for all pages: {", ".join(aliases)}
+            Aliases for first page: {", ".join(aliases_page_1)}
         </div>
         <iframe class="pdf-viewer" src="data:application/pdf;base64,{encoded_pdf}" width="100%" height="600"></iframe>
     </body>

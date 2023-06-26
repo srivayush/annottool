@@ -58,14 +58,15 @@ def generate_annotated_pdf_and_html(pdf_url):
             exception_in_automation = True
             result_dict = {}
             aliases = []
+            aliases_page_1 = []
             annotations = {}
             print("Encountered following exception while generating category mounting results:", e)      
         if result_dict:
             print("Logging result_dict", result_dict)
-            aliases, annotations = bounding_box_json_parser(result_dict)
+            aliases, aliases_page_1, annotations = bounding_box_json_parser(result_dict)
             if not annotations:
                 blank_bounding_boxes = True
-            print("Logging input_file, output_file, aliases, annotations", document_pdf_path, output_pdf_path, aliases, annotations)
+            print("Logging input_file, output_file, aliases, aliases_page_1, annotations", document_pdf_path, output_pdf_path, aliases, aliases_page_1, annotations)
         if annotations:
             print("Drawing annotations on output_pdf_path....")
             draw_annotations_on_pdf(input_file=document_pdf_path, output_file=output_pdf_path, annotations=annotations)
@@ -76,13 +77,13 @@ def generate_annotated_pdf_and_html(pdf_url):
                 print("Unable to generate annotations due to empty bounding boxes hence generating output_html_filepath from document_pdf_path...")
             else:
                 print("SOMETHING WRONG HAS HAPPENED")
-            output_html_filepath = generate_static_html_using_pdf_hash2(document_pdf_path, output_html_filepath, aliases)
+            output_html_filepath = generate_static_html_using_pdf_hash2(document_pdf_path, output_html_filepath, aliases, aliases_page_1)
             end_time = time.time()
             print(f"Total time taken to export html: {end_time-start_time} secs")
             return document_pdf_path, output_html_filepath
     if not os.path.exists(output_html_filepath):
         print("unable to locate output_html_filepath locally hence generating...")
-        output_html_filepath = generate_static_html_using_pdf_hash2(output_pdf_path, output_html_filepath, aliases)
+        output_html_filepath = generate_static_html_using_pdf_hash2(output_pdf_path, output_html_filepath, aliases, aliases_page_1)
     end_time = time.time()
     print(f"Total time taken to export html: {end_time-start_time} secs")
     return output_pdf_path, output_html_filepath
