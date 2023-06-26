@@ -76,13 +76,11 @@ def generate_annotated_pdf_and_html(pdf_url):
             else:
                 print("SOMETHING WRONG HAS HAPPENED")
             output_html_filepath = generate_static_html_using_pdf_hash2(document_pdf_path, output_html_filepath, aliases)
+            return document_pdf_path, output_html_filepath
     if not os.path.exists(output_html_filepath):
         print("unable to locate output_html_filepath locally hence generating...")
         output_html_filepath = generate_static_html_using_pdf_hash2(output_pdf_path, output_html_filepath, aliases)
-    if exception_in_automation:
-        return document_pdf_path, output_html_filepath
-    else:
-        return output_pdf_path, output_html_filepath
+    return output_pdf_path, output_html_filepath
 
 app = FastAPI()
 
