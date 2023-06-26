@@ -33,7 +33,7 @@ def generate_annotated_pdf_and_html(pdf_url):
     non_text_selectable = False
     url_hash = generate_hash(pdf_url)
     pdf_url = get_proxied_url(pdf_url)
-    print("$$$$$ url_hash", url_hash)
+    print("Computed url_hash", url_hash)
     local_filename = f"{url_hash}.pdf"
     output_filename = f"annotated_{url_hash}.pdf"
     html_filename = f"static_{url_hash}.html"
@@ -41,7 +41,7 @@ def generate_annotated_pdf_and_html(pdf_url):
     output_pdf_path = os.path.join(Settings.OUTPUT_PDF_DIR, output_filename)
     output_html_filepath = os.path.join(Settings.HTML_DIR, html_filename)    
     if not os.path.exists(document_pdf_path):
-        print("$$$$$ document_pdf_path does not exist hence downloading locally....")
+        print("Unable to find document_pdf_path locally hence downloading locally....")
         response = requests.get(pdf_url, timeout=10)
         if response.status_code == 200:
             with open(document_pdf_path, "wb") as file:
@@ -49,28 +49,37 @@ def generate_annotated_pdf_and_html(pdf_url):
         else:
             raise HTTPException(status_code=400, detail="Failed to download PDF file.")
     if not os.path.exists(output_pdf_path):
-        print("$$$$$ output_pdf_path does not exist hence generating annotations....")
+        exception_in_automation, blank_bounding_boxes = False, False
+        print("Unable to find output_pdf_path locally hence generating annotations....")
         try:
             result_dict = get_category_mounting_results_all_pages(pdf_filepath=document_pdf_path)
         except Exception as e:
-            non_text_selectable = True
+            exception_in_automation = True
             result_dict = {}
             aliases = []
-            print("$$$$$ Encountered exception while generating category mounting results:", e)      
+            annotations = {}
+            print("Encountered following exception while generating category mounting results:", e)      
         if result_dict:
-            print("$$$$$ result_dict", result_dict)
+            print("Logging result_dict", result_dict)
             aliases, annotations = bounding_box_json_parser(result_dict)
-            print("$$$$$ input_file, output_file, aliases, annotations", document_pdf_path, output_pdf_path, aliases, annotations)
-            if annotations:
-                print("$$$$$ drawing annotations on output_pdf_path....")
-                draw_annotations_on_pdf(input_file=document_pdf_path, output_file=output_pdf_path, annotations=annotations)
+            if not annotations:
+                blank_bounding_boxes = True
+            print("Logging input_file, output_file, aliases, annotations", document_pdf_path, output_pdf_path, aliases, annotations)
+        if annotations:
+            print("Drawing annotations on output_pdf_path....")
+            draw_annotations_on_pdf(input_file=document_pdf_path, output_file=output_pdf_path, annotations=annotations)
         else:
-            print("$$$$$ not able to generate annotations due to exception hence generating output_html_filepath from document_pdf_path...")
+            if exception_in_automation:
+                print("Unable to generate annotations due to exception hence generating output_html_filepath from document_pdf_path...")
+            elif blank_bounding_boxes:
+                print("Unable to generate annotations due to empty bounding boxes hence generating output_html_filepath from document_pdf_path...")
+            else:
+                print("SOMETHING WRONG HAS HAPPENED")
             output_html_filepath = generate_static_html_using_pdf_hash2(document_pdf_path, output_html_filepath, aliases)
     if not os.path.exists(output_html_filepath):
-        print("$$$$$ output_html_filepath does not exist hence generating...")
+        print("unable to locate output_html_filepath locally hence generating...")
         output_html_filepath = generate_static_html_using_pdf_hash2(output_pdf_path, output_html_filepath, aliases)
-    if non_text_selectable:
+    if exception_in_automation:
         return document_pdf_path, output_html_filepath
     else:
         return output_pdf_path, output_html_filepath
