@@ -246,6 +246,7 @@ def remove_keywords(list_of_text_from_json_file, remove_keyword_list):
   outputs_copy = copy.deepcopy(outputs)
   id_to_remove = [text["id"] for text in outputs]
   id_to_remove.sort()
+  id_to_remove = list(set(id_to_remove))
   i = 0
   j = 0
   while True:
