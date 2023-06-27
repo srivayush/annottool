@@ -81,6 +81,7 @@ def draw_annotations_on_pdf(input_file, output_file, annotations):
             if page_num in annotations:
                 # Draw the green boxes on the canvas
                 for box_info in annotations[page_num]:
+                    print("$$$$$", box_info)
                     [x1, y1, x2, y2, exclude] = box_info
                     if exclude:
                         # Transparent red rectangle
@@ -97,8 +98,10 @@ def draw_annotations_on_pdf(input_file, output_file, annotations):
             # Move the pointer to the beginning of the packet
             packet.seek(0)
             new_pdf = PdfFileReader(packet)
+            print("$$$$$ new_pdf.getNumPages()", new_pdf.getNumPages())
             # Merge the modified page with the original PDF
-            if new_pdf.getNumPages() > 0:            
+            if new_pdf.getNumPages() > 0:   
+                print("$$$$$ merging annots")         
                 page.mergePage(new_pdf.getPage(0))
             # Add the modified page to the output PDF
             output.addPage(page)
