@@ -93,9 +93,9 @@ def draw_annotations_on_pdf(input_file, output_file, annotations):
                         can.setFillColorRGB(0, 1, 0)
                     can.setFillAlpha(0.3)
                     can.rect(x1, y1, x2 - x1, y2 - y1, fill=1)
-                    can.save()
+                    # can.save()
             # Save the canvas
-            # can.save()
+            can.save()
             # Move the pointer to the beginning of the packet
             packet.seek(0)
             new_pdf = PdfFileReader(packet)
