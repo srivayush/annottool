@@ -77,13 +77,13 @@ def generate_annotated_pdf_and_html(pdf_url):
                 print("Unable to generate annotations due to empty bounding boxes hence generating output_html_filepath from document_pdf_path...")
             else:
                 print("SOMETHING WRONG HAS HAPPENED")
-            output_html_filepath = generate_static_html_using_pdf_hash2(document_pdf_path, output_html_filepath, aliases, aliases_page_1)
+            output_html_filepath = generate_static_html_using_pdf_hash(document_pdf_path, output_html_filepath, aliases, aliases_page_1)
             end_time = time.time()
             print(f"Total time taken to export html: {end_time-start_time} secs")
             return document_pdf_path, output_html_filepath
     if not os.path.exists(output_html_filepath):
         print("Unable to locate output_html_filepath locally hence generating...")
-        output_html_filepath = generate_static_html_using_pdf_hash2(output_pdf_path, output_html_filepath, aliases, aliases_page_1)
+        output_html_filepath = generate_static_html_using_pdf_hash(output_pdf_path, output_html_filepath, aliases, aliases_page_1)
     end_time = time.time()
     print(f"Total time taken to export html: {end_time-start_time} secs")
     return output_pdf_path, output_html_filepath
@@ -151,10 +151,6 @@ async def view_pdf(pdf_url: str = ""):
 @app.get("/pdf-viewer/")
 async def view_pdf_viewer_html(pdf_url: str=""):
     _, html_filepath = generate_annotated_pdf_and_html(pdf_url)
-    ############### Streaming response ###############
-    # response = StreamingResponse(stream_file(output_html_filepath), media_type="text/html")
-    # response.headers["Content-Disposition"] = f'inline; filename="{html_filename}"'
-    # return response
     with open(html_filepath, "r") as file:
         html_content = file.read()
     return HTMLResponse(content=html_content, media_type="text/html")

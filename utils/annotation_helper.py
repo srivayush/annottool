@@ -81,7 +81,6 @@ def draw_annotations_on_pdf(input_file, output_file, annotations):
             if page_num in annotations:
                 # Draw the green boxes on the canvas
                 for box_info in annotations[page_num]:
-                    print("$$$$$", box_info)
                     [x1, y1, x2, y2, exclude] = box_info
                     if exclude:
                         # Transparent red rectangle
@@ -110,80 +109,7 @@ def draw_annotations_on_pdf(input_file, output_file, annotations):
         with open(output_file, 'wb') as out_file:
             output.write(out_file)
 
-
-def draw_annotations_on_pdf_using_fitz(input_file, output_file, annotations):
-    doc = fitz.open(input_file)
-    total_pages = doc.page_count
-    for page_num, coords_list in annotations.items():
-        if page_num > total_pages:
-            print(f"Invalid page number: {page_num}. Skipping annotation.")
-            continue
-        else:
-            page = doc[page_num - 1]
-            for box_info in coords_list:
-                [x1, y1, x2, y2, exclude] = box_info
-                coords = (x1, y1, x2, y2)
-                rect = fitz.Rect(*coords)
-                highlight = page.add_highlight_annot(rect)
-                if exclude:
-                    highlight.set_colors(stroke=[1, 0, 0])  # Red stroke color
-                else:
-                    highlight.set_colors(stroke=[0, 1, 0])  # Green stroke color
-    doc.save(output_file)
-    doc.close()
-    print("Annotations added successfully")
-
-
-def generate_static_html_using_pdf_hash(pdf_path, html_path, aliases):
-    pdf_file_path = f"{pdf_path}"
-    with open(pdf_file_path, "rb") as file:
-        pdf_content = file.read()
-        encoded_pdf = base64.b64encode(pdf_content).decode("utf-8")
-    pdf_data_uri = f"data:application/pdf;base64,{encoded_pdf}"
-    html_content = f'''
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>PDF Viewer</title>
-        <style>
-            body, html {{
-                height: 100%;
-                margin: 0;
-                padding: 0;
-                overflow: hidden;
-                background-color: black;
-                color: white;
-            }}
-            .header {{
-                background-color: white;
-                color: black;
-                padding: 10px;
-                text-align: center;
-                font-size: 20px;
-                font-weight: bold;
-            }}
-            .pdf-viewer {{
-                width: 100%;
-                height: calc(100% - 30px);
-                border: none;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            Currently Selected: {", ".join(aliases)}
-        </div>
-        <iframe class="pdf-viewer" src="{pdf_data_uri}"></iframe>
-    </body>
-    </html>
-    '''
-    with open(html_path, 'w') as file:
-        file.write(html_content)
-    print(f"HTML file saved successfully at: {html_path}")
-    return html_path
-
-
-def generate_static_html_using_pdf_hash2(pdf_path, html_path, aliases, aliases_page_1):
+def generate_static_html_using_pdf_hash(pdf_path, html_path, aliases, aliases_page_1):
     with open(pdf_path, "rb") as file:
         pdf_content = file.read()
         encoded_pdf = base64.b64encode(pdf_content).decode("utf-8")
@@ -226,71 +152,5 @@ def generate_static_html_using_pdf_hash2(pdf_path, html_path, aliases, aliases_p
     with open(html_path, 'w') as file:
         file.write(html_content)
 
-    print(f"HTML file saved successfully at: {html_path}")
-    return html_path
-
-
-def generate_static_html_using_pdfjs(pdf_path, html_path, aliases):
-    pdf_file_path = f"{pdf_path}"
-    with open(pdf_file_path, "rb") as file:
-        pdf_content = file.read()
-        encoded_pdf = base64.b64encode(pdf_content).decode("utf-8")
-    pdf_data_uri = f"data:application/pdf;base64,{encoded_pdf}"
-    html_content=f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>PDF Viewer</title>
-        <style>
-            body, html {{
-                height: 100%;
-                margin: 0;
-                padding: 0;
-                overflow: hidden;
-                background-color: black;
-                color: white;
-            }}
-            .header {{
-                background-color: white;
-                color: black;
-                padding: 10px;
-                text-align: center;
-                font-size: 20px;
-                font-weight: bold;
-            }}
-            #pdf-viewer {{
-                width: 100%;
-                height: calc(100% - 30px);
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            Currently Selected: {", ".join(aliases)}
-        </div>
-        <div id="pdf-viewer"></div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
-        <script>
-            pdfjsLib.getDocument("{pdf_data_uri}").promise.then(function(pdf) {{
-                pdf.getPage(1).then(function(page) {{
-                    var canvas = document.createElement("canvas");
-                    var container = document.getElementById("pdf-viewer");
-                    container.appendChild(canvas);
-                    var context = canvas.getContext("2d");
-                    var viewport = page.getViewport({{ scale: 1 }});
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
-                    page.render({{
-                        canvasContext: context,
-                        viewport: viewport
-                    }});
-                }});
-            }});
-        </script>
-    </body>
-    </html>
-    """
-    with open(html_path, 'w') as file:
-        file.write(html_content)
     print(f"HTML file saved successfully at: {html_path}")
     return html_path
