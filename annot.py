@@ -13,7 +13,7 @@ class Settings:
     INPUT_PDF_DIR = "/home/ubuntu/annottool/pdf/input"
     OUTPUT_PDF_DIR = "/home/ubuntu/annottool/pdf/output"
     HTML_DIR = "/home/ubuntu/annottool/html"
-    PROXY_URL = "https://wvproxy-staging.parspec.io/controller/rate_limited_download?url="
+    PROXY_URL = "https://wvproxy.parspec.xyz/controller/rate_limited_download?url="
 
 def get_proxied_url(url):
     return Settings.PROXY_URL + base64.b64encode(url.encode()).decode()
